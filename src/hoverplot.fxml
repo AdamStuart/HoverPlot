@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="710.0" prefWidth="884.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="HoverPlotController">
+   <top>
+      <HBox prefHeight="139.0" prefWidth="883.0" BorderPane.alignment="BOTTOM_LEFT">
+         <children>
+            <VBox prefHeight="143.0" prefWidth="646.0">
+               <children>
+                  <Label fx:id="version" text="version" />
+                  <Label prefHeight="55.0" prefWidth="613.0" text="Hover Plot" textAlignment="CENTER">
+                     <font>
+                        <Font name="Apple Chancery" size="29.0" />
+                     </font>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </Label>
+                  <Separator prefWidth="200.0" />
+                  <TextArea prefHeight="42.0" prefWidth="646.0" text="An interactive scatter plot, where hovering over a dot shows the record information for that data point." wrapText="true" />
+               </children>
+            </VBox>
+            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#doPlot" prefWidth="72.0" text="Plot" />
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <TableView fx:id="table" prefHeight="278.0" prefWidth="722.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="block" prefWidth="55.0" text="Block" />
+            <TableColumn fx:id="row" prefWidth="55.0" text="Row" />
+            <TableColumn fx:id="column" prefWidth="55.0" text="Column" />
+            <TableColumn prefWidth="405.0" text="Peak">
+               <columns>
+                  <TableColumn fx:id="start" prefWidth="75.0" text="Start" />
+                  <TableColumn fx:id="center" prefWidth="75.0" text="Center" />
+                  <TableColumn fx:id="end" prefWidth="75.0" text="End" />
+                  <TableColumn fx:id="height" prefWidth="75.0" text="Height" />
+                  <TableColumn fx:id="area" prefWidth="75.0" text="Area" />
+                  <TableColumn fx:id="fwhm" prefWidth="75.0" text="FWHM" />
+               </columns>
+            </TableColumn>
+            <TableColumn fx:id="imageColumn" prefWidth="162.0" text="Lane" />
+            <TableColumn minWidth="0.0" prefWidth="39.0" text="Well X" fx:id="xCol" />
+            <TableColumn fx:id="yCol" prefWidth="38.0" text="Well Y" />
+          <TableColumn fx:id="lane" prefWidth="66.0" text="Lane Index" />
+        </columns>
+      </TableView>
+   </center>
+   <bottom>
+      <StackPane fx:id="wholeimagestack">
+         <children>
+            <ImageView fx:id="wholeimage" fitHeight="214.0" fitWidth="878.0" pickOnBounds="true" preserveRatio="true" />
+            <AnchorPane fx:id="anchorpane" prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </StackPane>
+   </bottom>
+</BorderPane>
