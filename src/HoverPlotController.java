@@ -1,11 +1,12 @@
-
-
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.opencsv.CSVReader;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,10 +32,18 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
-import com.opencsv.CSVReader;
-
 public class HoverPlotController implements Initializable
 {
+	// ------------------------------------------------------
+	/*  USE HARDCODED FILE NAMES RELATIVE TO CLASS PATH
+	 * 	 
+	 * 	AND ASSUMES THAT TABLE.CSV HAS 12 COLUMNS WITH NAMES DEFINED HERE
+	 */
+	private static final Image IMAGE = new Image(HoverPlotController.class.getResourceAsStream("/slide.png"));
+	private static final String TABLE_PATH = "src/table.csv";
+	private static final String[] COL_NAMES = new String[]{ "laneIndex", "block", "row", "column", "peakStart", "peakCenter", "peakEnd", "peakHeight", "peakArea", "peakFWHM", "x", "y"};
+	
+	// ------------------------------------------------------
 
 	private Stage stage;
 	public void setStage(Stage primaryStage)	{		stage = primaryStage;	}
@@ -66,23 +75,21 @@ public class HoverPlotController implements Initializable
 	public ObservableList<DataRecord> getModel()		{ return model; 	}
 	private HoverPlotGateLayer gateLayer;
 	// ------------------------------------------------------
-	
 	double MAX_X = 7000;
 	double MAX_Y = 900;
 	ScatterChart<Number, Number> scatter;
 	// ------------------------------------------------------
 	@Override public void initialize(URL location, ResourceBundle resources)
 	{
-		assert(table != null);		// injected from FXML
+		assert(table != null);				// injected from FXML
 		dblCols = new TableColumn[]{ lane, block, row, column, start, center, end, height, area, fwhm, xCol, yCol};
-		String[] names = new String[]{ "laneIndex", "block", "row", "column", "peakStart", "peakCenter", "peakEnd", "peakHeight", "peakArea", "peakFWHM", "x", "y"};
 		for (int i=0; i< dblCols.length; i++)	
 		{
 			TableColumn c = dblCols[i];
 			assert(c != null);
 			c.setStyle( "-fx-alignment: CENTER-RIGHT;");
 			c.setCellFactory(TextFieldTableCell.<DataRecord, Double>forTableColumn(new IntStringConverter()));
-			c.setCellValueFactory(new PropertyValueFactory<DataRecord, Double>(names[i]));
+			c.setCellValueFactory(new PropertyValueFactory<DataRecord, Double>(COL_NAMES[i]));
 		}
 		imageColumn.setCellValueFactory(new PropertyValueFactory<DataRecord, ImageView>("imageView"));
 		imageColumn.setMinWidth(200);
@@ -90,15 +97,14 @@ public class HoverPlotController implements Initializable
 //		 
 		table.setEditable(false);
 		table.setFixedCellSize(50.0);
-//		assert(lanePictures != null);		// injected from FXML
-			
 		version.setText("hover0.2");
-		String path = "src/peakExport3.csv";			// ---------------- READ CSV FILE HERE
-		File f = new File(path);
-		if (f.exists())
-			readCSVFile(path, table);
-		else System.err.println(path + " not found");
-//		doPlot();
+		File f = new File(TABLE_PATH);
+		if (f.exists())									//appFX/src/chart/hoverplot/peakExport3.csv
+			readCSVFile(TABLE_PATH, table);
+		else System.err.println(TABLE_PATH + " not found");
+
+        Platform.runLater(() ->{  doPlot();   });
+
 	}
 	
 	class IntStringConverter extends DoubleStringConverter
@@ -110,16 +116,13 @@ public class HoverPlotController implements Initializable
 		
 	}
 	// ------------------------------------------------------
-
 	private void readCSVFile(String path, TableView<DataRecord> table)
 	{
-		if (path == null || table == null) return ;
 		try
 		{
+			FileReader r = new FileReader(path);
 			String[] row = null;
-			FileReader rdr = new FileReader(path);
-			
-			CSVReader csvReader = new CSVReader(new FileReader(path));
+			CSVReader csvReader = new CSVReader(r);
 			List<String[]> content = csvReader.readAll();
 			csvReader.close();
 			int nCols = -1;
@@ -127,23 +130,17 @@ public class HoverPlotController implements Initializable
 			row = (String[]) content.get(0);		
 			nCols = row.length;
 			System.out.println(nCols + " columns");
+			
 			boolean isHeader = true;
 			model = FXCollections.observableArrayList();
 			for (Object aRow : content)
 				if (isHeader) 	isHeader = false;
 				else model.add(new DataRecord((String[])aRow));
 	        table.setItems(model);
-		} 
-		catch (NumberFormatException e)	
-		{		 
-			System.err.print("Wrong number of columns in row"); 
-			e.printStackTrace();	
-			return ;
 		}
 		catch (Exception e)				{			e.printStackTrace();	return ;	}
 	}
 	
-
 	// ------------------------------------------------------
 	@FXML private void doPlot()
 	{
@@ -176,9 +173,8 @@ public class HoverPlotController implements Initializable
 		
 		try
 		{
-			String s = "slide_lanes.png";	//chiptemplate.png 		// ----------------------- READ IMAGE FILE HERE
-			Image image = new Image(s );	
-			System.out.println("Size of " + s + " is " + image.getWidth() + " x " + image.getHeight());
+			Image image = IMAGE; // for now use a HARDCODED STATIC IMAGE   
+			System.out.println("Size of image is " + image.getWidth() + " x " + image.getHeight());
 			for (DataRecord rec : table.getItems())
 			{
 				rec.setImage(image);							// set the image in the DataRecord's ImageView
@@ -191,7 +187,8 @@ public class HoverPlotController implements Initializable
 
 		}
 		catch (Exception e){
-			System.err.println("failed");
+			System.err.println("doPlot failed to read the image file, line 181\n"); 
+			e.printStackTrace();
 		}
 		Stage newstage = new Stage();
 		newstage.setTitle("Hover Plot Peak Data");
