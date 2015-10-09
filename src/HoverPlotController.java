@@ -171,7 +171,7 @@ public class HoverPlotController implements Initializable
 		double downScale = 0.1;
 		try
 		{
-			Image image = IMAGE; // for now use a HARDCODED STATIC IMAGE   
+			Image image = IMAGE; // 			for now use a HARDCODED STATIC IMAGE   
 			System.out.println("Size of image is " + image.getWidth() + " x " + image.getHeight());
 			for (DataRecord rec : table.getItems())
 			{
