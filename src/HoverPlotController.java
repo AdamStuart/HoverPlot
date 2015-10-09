@@ -37,14 +37,13 @@ public class HoverPlotController implements Initializable
 	// ------------------------------------------------------
 	/*  USE HARDCODED FILE NAMES RELATIVE TO CLASS PATH
 	 * 	 
-	 * 	AND ASSUMES THAT TABLE.CSV HAS 12 COLUMNS WITH NAMES DEFINED HERE
+	 * 	IT ASSUMES THAT TABLE.CSV HAS 12 COLUMNS WITH NAMES DEFINED HERE
 	 */
 	private static final Image IMAGE = new Image(HoverPlotController.class.getResourceAsStream("/slide.png"));
 	private static final String TABLE_PATH = "src/table.csv";
 	private static final String[] COL_NAMES = new String[]{ "laneIndex", "block", "row", "column", "peakStart", "peakCenter", "peakEnd", "peakHeight", "peakArea", "peakFWHM", "x", "y"};
 	
 	// ------------------------------------------------------
-
 	private Stage stage;
 	public void setStage(Stage primaryStage)	{		stage = primaryStage;	}
 	
@@ -99,7 +98,7 @@ public class HoverPlotController implements Initializable
 		table.setFixedCellSize(50.0);
 		version.setText("hover0.2");
 		File f = new File(TABLE_PATH);
-		if (f.exists())									//appFX/src/chart/hoverplot/peakExport3.csv
+		if (f.exists())		
 			readCSVFile(TABLE_PATH, table);
 		else System.err.println(TABLE_PATH + " not found");
 
@@ -113,7 +112,6 @@ public class HoverPlotController implements Initializable
 		        if (value == null)             return "";		  // If the specified value is null, return a zero-length String
 		        return String.format("%.0f", value.doubleValue());
 		    }
-		
 	}
 	// ------------------------------------------------------
 	private void readCSVFile(String path, TableView<DataRecord> table)
@@ -155,7 +153,6 @@ public class HoverPlotController implements Initializable
 		yAxis.setLabel("Center of Well");
 		scatter.setTitle("Sequential Display of Peak Centers");
 		
-		
 		StackPane stack = new StackPane();
 		lanePictures = new HBox(5);
 		ScrollPane galleryScroller = new ScrollPane(lanePictures);
@@ -171,6 +168,7 @@ public class HoverPlotController implements Initializable
 		scatter.widthProperty().addListener((num)-> onUpdateDots());	// Add a listener to the chart's width
 		gateLayer = new HoverPlotGateLayer(scatter, this, canvas);		// install listeners to implement marquee selection
 		
+		double downScale = 0.1;
 		try
 		{
 			Image image = IMAGE; // for now use a HARDCODED STATIC IMAGE   
@@ -179,11 +177,11 @@ public class HoverPlotController implements Initializable
 			{
 				rec.setImage(image);							// set the image in the DataRecord's ImageView
 				canvas.getChildren().add(rec.getNode());		// add point to the graph
-				anchorpane.getChildren().add(rec.getOutline());
+				anchorpane.getChildren().add(rec.getOutline());		// TODO BUG -- recs don't move with resizing window.
 			}
 			wholeimage.setImage(image);
-			wholeimage.setFitWidth(image.getWidth() / 10);
-			wholeimage.setFitHeight(image.getHeight() / 10);
+			wholeimage.setFitWidth(image.getWidth() * downScale);
+			wholeimage.setFitHeight(image.getHeight() * downScale);
 
 		}
 		catch (Exception e){
