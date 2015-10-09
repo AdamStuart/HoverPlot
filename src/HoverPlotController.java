@@ -185,7 +185,7 @@ public class HoverPlotController implements Initializable
 
 		}
 		catch (Exception e){
-			System.err.println("doPlot failed to read the image file, line 181\n"); 
+			System.err.println("doPlot method failed to read the image file, line 181\n"); 
 			e.printStackTrace();
 		}
 		Stage newstage = new Stage();
