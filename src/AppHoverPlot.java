@@ -14,6 +14,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/*--------------------------------------------------------------------------------
+* Hover Plot -- create a scatter plot where each point has a tooltip associated
+* with it that displays more record information in a pop up.
+* 
+* See HoverPlotController to set the two input files
+*/ 
+//--------------------------------------------------------------------------------
 public class AppHoverPlot extends Application
 {
 	@Override
